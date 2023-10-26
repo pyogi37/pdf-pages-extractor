@@ -4,14 +4,18 @@ const dotenv = require("dotenv");
 dotenv.config({ path: __dirname + "/.env" });
 
 const connectDB = require("./config/db");
-const colors = require("colors");
-
 const port = process.env.PORT;
+const colors = require("colors");
+const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const path = require("path");
 
 connectDB();
 
-app.use(express.urlencoded());
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 app.use(express.json());
 
@@ -25,6 +29,9 @@ app.use(function (req, res, next) {
 });
 
 app.use("/", require("./routes"));
+
+app.use(notFound);
+app.use(errorHandler);
 
 const server = app.listen(port, function (err) {
   if (err) {
